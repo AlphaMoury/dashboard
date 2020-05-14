@@ -39,3 +39,4 @@ for genero in datos['Sexo']:
         masculino += 1
     else:
         otro += 1
+

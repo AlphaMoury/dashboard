@@ -95,15 +95,18 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
         id='bar genero',
         figure={
             'data': [
-                {'x': ['Mujeres', 'Hombres', 'Otro'], 'y': [datos.femenino, datos.masculino, datos.otro],
-                 'type': 'bar', 'name': 'Género'},
+                {
+                    'labels': ['Femenino', 'Masculino', 'Otro'],
+                    'values': [datos.femenino, datos.masculino, datos.otro],
+                    'type': 'pie',
+                }
             ],
             'layout': {
                 'plot_bgcolor': colors['background'],
                 'paper_bgcolor': colors['background'],
                 'font': {
                     'color': colors['text']
-                }
+                },
             }
         }
     ),
@@ -115,10 +118,10 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
 
     dcc.Graph(
         id='fech-est',
-        figure={
+        figure= {
             'data': [
-                {'x': datos.datos['Fecha de notificación'], 'y': datos.datosA,
-                 'type': 'bar', 'name': 'Estado'},
+                {'x': datos.datos['Fecha de notificación'], 'y': datos.datos['ID de caso'],
+                 },
             ],
             'layout': {
                 'plot_bgcolor': colors['background'],

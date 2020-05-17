@@ -1,7 +1,7 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-import datos
+import Colombia
 
 # import plotly.plotly as py
 
@@ -34,8 +34,9 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
         id='bar IRF',
         figure={
             'data': [
-                {'x': ['Infectados', 'Recuperados', 'Fallecidos', 'Total'], 'y': [datos.i, datos.r, datos.f, datos.N],
-                 'type': 'bar', 'name': 'IRFT'},
+                {'x': ['Fallecidos', 'Recuperados', 'Infectados', 'Total'],
+                 'y': Colombia.FRI,
+                 'type': 'bar', 'name': 'FRI'},
             ],
             'layout': {
                 'plot_bgcolor': colors['background'],
@@ -53,51 +54,51 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
                 'textAlign': 'center',
                 'color': colors['text']
             }),
-             html.Th('Recuperados', style={
-                'textAlign': 'center',
-                'color': colors['text']
-            }),
-            html.Th('Fallecidos', style={
-                'textAlign': 'center',
-                'color': colors['text']
-            }),
-            html.Th('Total', style={
-                'textAlign': 'center',
-                'color': colors['text']
-            })])
+                     html.Th('Recuperados', style={
+                         'textAlign': 'center',
+                         'color': colors['text']
+                     }),
+                     html.Th('Fallecidos', style={
+                         'textAlign': 'center',
+                         'color': colors['text']
+                     }),
+                     html.Th('Total', style={
+                         'textAlign': 'center',
+                         'color': colors['text']
+                     })])
         ),
         html.Tbody([
-            html.Tr([html.Td(datos.i, style={
+            html.Tr([html.Td(Colombia.FRI[2], style={
                 'textAlign': 'center',
                 'color': colors['text']
             }),
-             html.Td(datos.r, style={
-                'textAlign': 'center',
-                'color': colors['text']
-            }),
-             html.Td(datos.f, style={
-                'textAlign': 'center',
-                'color': colors['text']
-            }),
-             html.Td(datos.N, style={
-                'textAlign': 'center',
-                'color': colors['text']
-            })])
+                     html.Td(Colombia.FRI[1], style={
+                         'textAlign': 'center',
+                         'color': colors['text']
+                     }),
+                     html.Td(Colombia.FRI[0], style={
+                         'textAlign': 'center',
+                         'color': colors['text']
+                     }),
+                     html.Td(Colombia.FRI[3], style={
+                         'textAlign': 'center',
+                         'color': colors['text']
+                     })])
         ]),
     ]),
 
-    html.Div(children='COVID-19 por Género', style={
+    html.Div(children='Estado en gráfica torta', style={
         'textAlign': 'center',
         'color': colors['text']
     }),
 
     dcc.Graph(
-        id='bar genero',
+        id='pie FRI',
         figure={
             'data': [
                 {
-                    'labels': ['Femenino', 'Masculino', 'Otro'],
-                    'values': [datos.femenino, datos.masculino, datos.otro],
+                    'labels': ['Fallecido', 'Recuperado', 'Infectado'],
+                    'values': [Colombia.FRI[0], Colombia.FRI[1], Colombia.FRI[2]],
                     'type': 'pie',
                 }
             ],
@@ -111,28 +112,30 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
         }
     ),
 
-    html.Div(children='Fecha-Estado', style={
-            'textAlign': 'center',
-            'color': colors['text']
+    html.Div(children='Género', style={
+        'textAlign': 'center',
+        'color': colors['text']
     }),
 
     dcc.Graph(
-        id='fech-est',
-        figure= {
+        id='pie genero',
+        figure={
             'data': [
-                {'x': datos.datos['Fecha de notificación'], 'y': datos.datos['ID de caso'],
-                 },
+                {
+                    'labels': ['Femenino', 'Masculino', 'Otro'],
+                    'values': [Colombia.gen[0], Colombia.gen[1], Colombia.gen[2]],
+                    'type': 'pie',
+                }
             ],
             'layout': {
                 'plot_bgcolor': colors['background'],
                 'paper_bgcolor': colors['background'],
                 'font': {
                     'color': colors['text']
-                }
+                },
             }
         }
     ),
-
 ])
 
 # Cargar página

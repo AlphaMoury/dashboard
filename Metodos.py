@@ -1,22 +1,7 @@
-import pandas as pd
-from sodapy import Socrata # Es un cliente de python para Socrata Open Data API .
+from datetime import date
+from datetime import datetime
 
-# Unauthenticated client only works with public data sets. Note 'None'
-# in place of application token, and no username or password:
-client = Socrata("www.datos.gov.co", None)
 
-# Example authenticated client (needed for non-public datasets):
-# client = Socrata(www.datos.gov.co,
-#                  MyAppToken,
-#                  userame="user@example.com",
-#                  password="AFakePassword")
-
-# results returned as JSON from API / converted to Python list of
-# dictionaries by sodapy.
-results = client.get("gt2j-8ykr", limit=20000)
-
-# Convert to pandas DataFrame
-results_df = pd.DataFrame.from_records(results)
 # Imprimir el dataframe
 # print(results_df)
 # Imprimir solo los 10 primeros
@@ -33,3 +18,34 @@ results_df = pd.DataFrame.from_records(results)
 # results_df.rename(columns={'id_de_caso': 'ID'},inplace=True)
 # Otra manera de obtener información
 # print(results_df.info())
+# Convertir los tipos de datos
+# results_df.astype();
+
+
+# Método para calcular los fallecidos, recuperados e infectados
+def calculoFRI(columna):
+    fri = [0, 0, 0, 0]
+    for estado in columna:
+        if estado == 'Fallecido':
+            fri[0] += 1
+        elif estado == 'Recuperado':
+            fri[1] += 1
+        else:
+            fri[2] += 1
+    fri[3] = fri[0]+fri[1]+fri[2]
+    return fri
+
+
+# Método para calcular por genero
+def FMO(columna):
+    fmo = [0, 0, 0]
+    for genero in columna:
+        if genero == 'F':
+            fmo[0] += 1
+        elif genero == 'M':
+            fmo[1] += 1
+        else:
+            fmo[2] += 1
+    return fmo
+
+

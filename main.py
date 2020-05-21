@@ -1,11 +1,10 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+from plotly.tools import mpl_to_plotly
+import matplotlib.pyplot as plt
 import Colombia
-
-# import plotly.plotly as py
-
-# from plotly.graph_objs import *
+import Metodos
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -15,6 +14,25 @@ colors = {
     'background': '#111111',
     'text': '#7FDBFF'
 }
+
+# Grafica de infectados por dia
+infec = plt.figure(figsize=(13, 5))
+ax = infec.add_subplot(111)
+ax.plot(Colombia.tiempoInfectados, Colombia.infectados, 'o')
+ax.plot(Colombia.tiempoInfectados, Metodos.modeloExp(Colombia.tiempoInfectados, *Colombia.paramsInfect))
+plotly_figInfectados = mpl_to_plotly(infec)
+
+# gráfica de recuperados por día
+recu = plt.figure(figsize=(13, 5))
+axR = recu.add_subplot(111)
+axR.plot(Colombia.tiempoRecuperados, Colombia.recuperados, 'o')
+plotly_figRecuperados = mpl_to_plotly(recu)
+
+# Gráfica de fallecidos por día
+fall = plt.figure(figsize=(13, 5))
+axF = fall.add_subplot(111)
+axF.plot(Colombia.timempoFallecidos, Colombia.fallecidos, 'o')
+plotly_figFallecidos = mpl_to_plotly(fall)
 
 app.layout = html.Div(style={'backgroundColor': colors['background']}, children=[
     html.H1(
@@ -136,7 +154,35 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
             }
         }
     ),
+
+    html.Div(children='Infectados por día', style={
+        'textAlign': 'center',
+        'color': colors['text']
+    }),
+
+    dcc.Graph(id='infectados',
+              figure=plotly_figInfectados
+              ),
+
+    html.Div(children='Recuperados por día', style={
+        'textAlign': 'center',
+        'color': colors['text']
+    }),
+
+    dcc.Graph(id='recuperados',
+              figure=plotly_figRecuperados
+              ),
+
+    html.Div(children='Fallecidos por día', style={
+        'textAlign': 'center',
+        'color': colors['text']
+    }),
+
+    dcc.Graph(id='fallecidos',
+              figure=plotly_figFallecidos
+              ),
 ])
+
 
 # Cargar página
 if __name__ == '__main__':

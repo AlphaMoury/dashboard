@@ -1,6 +1,5 @@
-from datetime import date
-from datetime import datetime
-
+import collections
+import numpy as np
 
 # Imprimir el dataframe
 # print(results_df)
@@ -20,6 +19,10 @@ from datetime import datetime
 # print(results_df.info())
 # Convertir los tipos de datos
 # results_df.astype();
+# Agrupar datos
+# results_df.groupby(['columna'])
+# Sacar un muestro de datos
+# results_df.sample(10)
 
 
 # Método para calcular los fallecidos, recuperados e infectados
@@ -49,3 +52,35 @@ def FMO(columna):
     return fmo
 
 
+# Método para modificar formato de fecha
+def formatoFecha(fecha):
+    try:
+        fecha = fecha.split('T')[0].split('-')
+        if len(fecha) == 3:
+            fecha = fecha[2] + '/' + fecha[1] + '/' + fecha[0]
+        else:
+            fecha = '-'
+    except IndexError:
+        fecha = '-'
+    if len(fecha) != 10 and len(fecha) != 1:
+        fecha = '-'
+    return fecha
+
+
+# Método que da casos por día ya sea de infectados muertos o recuperados
+def casosxdia(columna):
+    datos = []
+    for fecha in columna:
+        try:
+            fecha = fecha.split('/')
+            datos.append(fecha[2]+fecha[1]+fecha[0])
+        except IndexError:
+            fecha = '-'
+    datos.sort()
+    datos_ordenadors = collections.OrderedDict(collections.Counter(datos))
+    return np.array(datos_ordenadors.values()), len(datos_ordenadors)
+
+
+# Modelo de datos exponencial
+def modeloExp(t, a, b, c, d):
+    return a*np.exp(b*t + c)+d

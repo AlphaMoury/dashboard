@@ -37,7 +37,7 @@ results_df.rename(columns={'id_de_caso': 'id',
 # ---------- pais, fecha_sintomas, fecha muerte, fecha_diagnostico, fecha_recuperado ------------------
 
 # Cambio tipos de datos
-results_df = results_df.astype({'id': int, 'edad': int})
+results_df = results_df.astype({'id': int, 'edad': int, 'fecha_recuperado': str, 'fecha_muerte': str})
 
 # Fallecidos, recuperados, infectados
 FRI = Metodos.calculoFRI(results_df['atencion'])
@@ -46,26 +46,34 @@ FRI = Metodos.calculoFRI(results_df['atencion'])
 gen = Metodos.FMO(results_df['sexo'])
 
 # -----------------Infectados------------
-# Número de infectados por día
-# print(results_df.groupby('fecha_diagnostico')['fecha_diagnostico'].count())
-conteoInfect = np.array(results_df.groupby('fecha_diagnostico')['fecha_diagnostico'].count())
-# Conteo desde el 11 de marzo
-infectados = conteoInfect[3:]
+# Transformación de fecha
+results_df['fecha_diagnostico'] = results_df['fecha_diagnostico'].transform(lambda fecha: Metodos.formatoFecha(fecha))
+# Número de infectados por día y tiempo
+infectados = list(Metodos.casosxdia(results_df['fecha_diagnostico']))
 tiempoInfectados = np.array(range(len(infectados)))
+# Datos reales, datos test y tiempo
+infectadosD = infectados[:65]
+tiempoInfectadosD = tiempoInfectados[:65]
+infectadosT = infectados[65:]
+tiempoInfectadosT = tiempoInfectados[65:]
 
 # Regresión
-paramsInfect, idn = curve_fit(Metodos.modeloExp, tiempoInfectados, infectados, maxfev=2000)
+paramsInfect, idn = curve_fit(Metodos.modeloExp, tiempoInfectadosD, infectadosD, maxfev=2000)
 
 # -------------------Recuperados--------
-# Número de recuperados por día
-# print(results_df.groupby('fecha_recuperado')['fecha_recuperado'].count())
-conteoRec = np.array(results_df.groupby('fecha_recuperado')['fecha_recuperado'].count())
-recuperados = conteoRec[1:-1]
+# Transformación fecha
+results_df['fecha_recuperado'] = results_df['fecha_recuperado'].transform(lambda fecha: Metodos.formatoFecha(fecha))
+# Número de recuperados por día y tiempo
+recuperados = list(Metodos.casosxdia(results_df['fecha_recuperado']))
 tiempoRecuperados = np.array(range(len(recuperados)))
+# Número acumulado de recuperados
+acumuladosR = Metodos.acumulador(recuperados)
 
 # -----------Fallecidos-----------
-# Número de fallecidos por dia
-# print(results_df.groupby('fecha_muerte')['fecha_muerte'].count())
-conteoFall = np.array(results_df.groupby('fecha_muerte')['fecha_muerte'].count())
-fallecidos = conteoFall[1:]
-timempoFallecidos = np.array(range(len(fallecidos)))
+# Transformación fecha
+results_df['fecha_muerte'] = results_df['fecha_muerte'].transform(lambda fecha: Metodos.formatoFecha(fecha))
+# Número de fallecidos por día y tiempo
+fallecidos = list(Metodos.casosxdia(results_df['fecha_muerte']))
+tiempoFallecidos = np.array(range(len(fallecidos)))
+# Número acumulado de recuperados
+acumuladosF = Metodos.acumulador(fallecidos)

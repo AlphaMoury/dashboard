@@ -1,6 +1,7 @@
 import collections
 import numpy as np
 
+
 # Imprimir el dataframe
 # print(results_df)
 # Imprimir solo los 10 primeros
@@ -35,7 +36,7 @@ def calculoFRI(columna):
             fri[1] += 1
         else:
             fri[2] += 1
-    fri[3] = fri[0]+fri[1]+fri[2]
+    fri[3] = fri[0] + fri[1] + fri[2]
     return fri
 
 
@@ -73,14 +74,22 @@ def casosxdia(columna):
     for fecha in columna:
         try:
             fecha = fecha.split('/')
-            datos.append(fecha[2]+fecha[1]+fecha[0])
+            datos.append(fecha[2] + fecha[1] + fecha[0])
         except IndexError:
             fecha = '-'
-    datos.sort()
     datos_ordenadors = collections.OrderedDict(collections.Counter(datos))
-    return np.array(datos_ordenadors.values()), len(datos_ordenadors)
+    return datos_ordenadors.values()
 
 
 # Modelo de datos exponencial
 def modeloExp(t, a, b, c, d):
-    return a*np.exp(b*t + c)+d
+    return a * np.exp(b * t + c) + d
+
+
+# Método para acumular valores
+def acumulador(vector):
+    datos = np.zeros(len(vector), dtype=int)
+    for i in range(0, len(vector), 1):
+        for j in range(0, i+1, 1):
+            datos[i] = datos[i] + vector[j]
+    return datos

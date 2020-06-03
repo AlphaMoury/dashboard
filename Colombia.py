@@ -2,7 +2,8 @@ from scipy.optimize import curve_fit
 import pandas as pd
 import numpy as np
 import Metodos
-from sodapy import Socrata  # Es un cliente de python para Socrata Open Data API .
+# Es un cliente de python para Socrata Open Data API.
+from sodapy import Socrata
 
 # Unauthenticated client only works with public data sets. Note 'None'
 # in place of application token, and no username or password:
@@ -33,11 +34,14 @@ results_df.rename(columns={'id_de_caso': 'id',
                            'fis': 'fecha_sintomas',
                            'fecha_de_muerte': 'fecha_muerte'}, inplace=True)
 
-# ---------- Columnas : id, fecha, ciudad, departamento, atencion, edad, sexo, tipo, estado, ----------
-# ---------- pais, fecha_sintomas, fecha muerte, fecha_diagnostico, fecha_recuperado ------------------
+# ---------- Columnas : id, fecha, ciudad, departamento, atencion -------------
+# ---------- edad sexo, tipo, estado,pais, fecha_sintomas,  -------------------
+# ---------- fecha muerte, fecha_diagnostico, fecha_recuperado ----------------
 
 # Cambio tipos de datos
-results_df = results_df.astype({'id': int, 'edad': int, 'fecha_recuperado': str, 'fecha_muerte': str})
+results_df = results_df.astype({'id': int, 'edad': int,
+                                'fecha_diagnostico': str,
+                                'fecha_recuperado': str, 'fecha_muerte': str})
 
 # Fallecidos, recuperados, infectados
 FRI = Metodos.calculoFRI(results_df['atencion'])
@@ -47,7 +51,8 @@ gen = Metodos.FMO(results_df['sexo'])
 
 # -----------------Infectados------------
 # Transformación de fecha
-results_df['fecha_diagnostico'] = results_df['fecha_diagnostico'].transform(lambda fecha: Metodos.formatoFecha(fecha))
+results_df['fecha_diagnostico'] = results_df['fecha_diagnostico'].apply(
+    lambda fecha: Metodos.formatoFecha(fecha))
 # Número de infectados por día y tiempo
 infectados = list(Metodos.casosxdia(results_df['fecha_diagnostico']))
 tiempoInfectados = np.array(range(len(infectados)))
@@ -58,22 +63,47 @@ infectadosT = infectados[65:]
 tiempoInfectadosT = tiempoInfectados[65:]
 
 # Regresión
-paramsInfect, idn = curve_fit(Metodos.modeloExp, tiempoInfectadosD, infectadosD, maxfev=2000)
+paramsInfect, idn = curve_fit(Metodos.modeloExp, tiempoInfectadosD,
+                              infectadosD, maxfev=2000)
+
+# Acumulados
+acumuladosI = Metodos.acumulador(infectados)
 
 # -------------------Recuperados--------
 # Transformación fecha
-results_df['fecha_recuperado'] = results_df['fecha_recuperado'].transform(lambda fecha: Metodos.formatoFecha(fecha))
+results_df['fecha_recuperado'] = results_df['fecha_recuperado'].transform(
+    lambda fecha: Metodos.formatoFecha(fecha))
 # Número de recuperados por día y tiempo
 recuperados = list(Metodos.casosxdia(results_df['fecha_recuperado']))
 tiempoRecuperados = np.array(range(len(recuperados)))
 # Número acumulado de recuperados
 acumuladosR = Metodos.acumulador(recuperados)
+# Datos reales, datos test
+recuperadosD = acumuladosR[:65]
+tiempoRecuperadosD = tiempoRecuperados[:65]
+recuperadosT = acumuladosR[65:]
+tiempoRecuperadosT = tiempoRecuperados[65:]
+
+# Regresión
+paramsRecup, idn = curve_fit(Metodos.modeloExp, tiempoRecuperadosD,
+                             recuperadosD, maxfev=2000)
 
 # -----------Fallecidos-----------
 # Transformación fecha
-results_df['fecha_muerte'] = results_df['fecha_muerte'].transform(lambda fecha: Metodos.formatoFecha(fecha))
+results_df['fecha_muerte'] = results_df['fecha_muerte'].transform(
+    lambda fecha: Metodos.formatoFecha(fecha))
 # Número de fallecidos por día y tiempo
 fallecidos = list(Metodos.casosxdia(results_df['fecha_muerte']))
+fallecidos.pop()
 tiempoFallecidos = np.array(range(len(fallecidos)))
 # Número acumulado de recuperados
 acumuladosF = Metodos.acumulador(fallecidos)
+# Datos reales, datos test
+fallecidosD = acumuladosF[:65]
+tiempoFallecidosD = tiempoFallecidos[:65]
+fallecidosT = acumuladosF[65:]
+tiempoFallecidosT = tiempoFallecidos[65:]
+
+# Regresión
+paramsFall, idn = curve_fit(Metodos.modeloExp, tiempoFallecidosD, fallecidosD,
+                            maxfev=5000)

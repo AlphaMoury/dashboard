@@ -63,8 +63,6 @@ def formatoFecha(fecha):
             fecha = '-'
     except IndexError:
         fecha = '-'
-    if len(fecha) != 10 and len(fecha) != 1:
-        fecha = '-'
     return fecha
 
 

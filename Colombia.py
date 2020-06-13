@@ -66,17 +66,18 @@ datosI = Metodos.casosxdia(results_df['fecha_diagnostico'])
 infectados = list(datosI.values())
 fechasI = list(datosI.keys())
 tiempoInfectados = np.array(range(len(infectados)))
+# Acumulados
+acumuladosI = Metodos.acumulador(infectados)
 # Datos reales, datos test y tiempo
-infectadosD = infectados[:75]
+infectadosD = acumuladosI[:75]
 tiempoInfectadosD = tiempoInfectados[:75]
-infectadosT = infectados[75:]
+infectadosT = acumuladosI[75:]
 tiempoInfectadosT = tiempoInfectados[75:]
 
 # Regresión
 paramsInfect, idn = curve_fit(Metodos.modeloExp, tiempoInfectadosD, infectadosD, maxfev=2000)
 
-# Acumulados
-acumuladosI = Metodos.acumulador(infectados)
+
 
 # -------------------Recuperados--------
 # Transformación fecha
@@ -140,9 +141,14 @@ n = 500
 
 t, sol = Metodos.RK38(F, P0, T, n)
 
-# ------------ Modelo SEIR ---------
-
-
-# print('Infectados ', infectados)
-# print('Recuperados ', recuperados)
-# print('Fallecidos ', fallecidos)
+# ------------ Párametros SIR ---------
+# Beta
+S = 10000-acumuladosI[:35]
+dSdt = Metodos.CD(tiempoInfectados[:35],S)
+SI = -S[1:-1]*(acumuladosI[1:34]/10000)
+beta = (dSdt/SI).mean()
+#Gama
+R = acumuladosR[:35]+acumuladosF[:35]
+dRdt = Metodos.CD(tiempoRecuperados[:35],R)
+I = acumuladosI[1:34]
+gamma = (dRdt/I).mean()

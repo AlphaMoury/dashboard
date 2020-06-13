@@ -105,7 +105,7 @@ recuperados = go.Scatter(
     name='Recuperados y fallecidos', mode='lines')
 datos = go.Scatter(
     x=Colombia.t,
-    y=Colombia.infectados[35:],
+    y=Colombia.acumuladosI[35:],
     name='Datos infectados', mode='markers')
 
 layout = go.Layout(title='Modelo SIR',
@@ -276,7 +276,47 @@ def render_contect(tab):
                 html.H3(
                     children='SIR',
                     style={'textAlign': 'center', 'color': colors['text']}),
-                dcc.Graph(id='modelo-SIR', figure=figSIR)])
+                dcc.Graph(id='modelo-SIR', figure=figSIR),
+                html.H3(
+                    children='Parámetros SIR',
+                    style={'textAlign': 'center', 'color': colors['text']}),
+                dcc.Graph(
+                    id='Parametro-beta',
+                    figure={
+                        'data': [
+                            go.Scatter(
+                                x = Colombia.dSdt,
+                                y = Colombia.SI,
+                                mode='markers+lines',
+                                name='SI contra dSdt'
+                                )],
+                        'layout': go.Layout(
+                            title='Cambio de Beta',
+                            yaxis={'title': 'SuceptiblesxInfectados'},
+                            xaxis={'title': 'Derivada de suceptibles respecto al tiempo'},
+                            hovermode='closest'
+                            )}
+                    ),
+                html.P(['Valor de Beta a para la fecha 13 de abril es: ', Colombia.beta]),
+                dcc.Graph(
+                    id='Parametro-gamma',
+                    figure={
+                        'data': [
+                            go.Scatter(
+                                x = Colombia.dRdt,
+                                y = Colombia.I,
+                                mode='markers+lines',
+                                name='SI contra dSdt'
+                                )],
+                        'layout': go.Layout(
+                            title='Cambio de Gamma',
+                            yaxis={'title': 'Infectados'},
+                            xaxis={'title': 'Derivada de recuperados respecto al tiempo'},
+                            hovermode='closest'
+                            )}
+                    ),
+                html.P(['Valor de Gamma a para la fecha 13 de abril es: ', Colombia.gamma])
+                ])
         ])
 
 # Cargar página

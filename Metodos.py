@@ -152,5 +152,18 @@ def edad(columna):
         else:
             edades[9]+=1
     return edades 
+
+def CD(t,S):
+    t=np.array(t)
+    S=np.array(S)
+    n=len(t)-2
+    ΔSΔt=np.zeros(n)
+    
+    for i in range(n):
+        Δt=t[i+2]-t[i]
+        ΔS=S[i+2]-S[i]
+        ΔSΔt[i]=ΔS/Δt
+        
+    return ΔSΔt
             
     

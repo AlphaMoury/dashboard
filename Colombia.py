@@ -27,7 +27,7 @@ results_df = pd.DataFrame.from_records(results)
 
 # LIMPIEZA
 # Quitar columna
-results_df.drop(['codigo_divipola', 'fecha_reporte_web'], axis=1, inplace=True)
+results_df.drop(['fecha_reporte_web'], axis=1, inplace=True)
 # Renombrar las columnas
 results_df.rename(columns={'id_de_caso': 'id',
                            'fecha_de_notificaci_n': 'fecha',

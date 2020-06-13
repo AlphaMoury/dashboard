@@ -8,6 +8,7 @@ from plotly.subplots import make_subplots
 from dash.dependencies import Input, Output
 import Colombia
 import Metodos
+import numpy as np
 
 # ----------------------- Infectados ----------------------
 Infec = go.Scatter(
@@ -281,19 +282,35 @@ def render_contect(tab):
                     children='Parámetros SIR',
                     style={'textAlign': 'center', 'color': colors['text']}),
                 dcc.Graph(
+                    id='Param',
+                    figure = {
+                        'data': [
+                            go.Scatter( 
+                                x=Colombia.tiempoInfectados[:35],
+                                y=np.ones(35)*0.24,
+                                mode='markers+lines',
+                                name='Parámetros')],
+                        'layout': go.Layout(
+                                title='Parámetros',
+                                xaxis={'title': 'Tiempo'},
+                                yaxis={'title': 'Valor'},
+                                hovermode='closest'
+                            )}
+                ),
+                dcc.Graph(
                     id='Parametro-beta',
                     figure={
                         'data': [
                             go.Scatter(
-                                x = Colombia.dSdt,
-                                y = Colombia.SI,
+                                x = Colombia.SI,
+                                y = Colombia.dSdt,
                                 mode='markers+lines',
                                 name='SI contra dSdt'
                                 )],
                         'layout': go.Layout(
                             title='Cambio de Beta',
-                            yaxis={'title': 'SuceptiblesxInfectados'},
-                            xaxis={'title': 'Derivada de suceptibles respecto al tiempo'},
+                            xaxis={'title': 'SuceptiblesxInfectados'},
+                            yaxis={'title': 'Derivada de suceptibles respecto al tiempo'},
                             hovermode='closest'
                             )}
                     ),
@@ -303,15 +320,15 @@ def render_contect(tab):
                     figure={
                         'data': [
                             go.Scatter(
-                                x = Colombia.dRdt,
-                                y = Colombia.I,
+                                x = Colombia.I,
+                                y = Colombia.dRdt,
                                 mode='markers+lines',
                                 name='SI contra dSdt'
                                 )],
                         'layout': go.Layout(
                             title='Cambio de Gamma',
-                            yaxis={'title': 'Infectados'},
-                            xaxis={'title': 'Derivada de recuperados respecto al tiempo'},
+                            xaxis={'title': 'Infectados'},
+                            yaxis={'title': 'Derivada de recuperados respecto al tiempo'},
                             hovermode='closest'
                             )}
                     ),
